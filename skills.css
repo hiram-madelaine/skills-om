@@ -1,0 +1,222 @@
+
+.FlexBox {
+  display: -webkit-box;
+  display: -moz-box;
+  display: box;
+}
+.VerticalBox {
+  display: -webkit-box;
+  display: -moz-box;
+  display: box;
+  -webkit-box-orient: vertical;
+  -moz-box-orient: vertical;
+  box-orient: vertical;
+}
+.PackCenter {
+  -webkit-box-pack: center;
+  -moz-box-pack: center;
+  box-pack: center;
+}
+.AlignCenter {
+  -webkit-box-align: center;
+  -moz-box-align: center;
+  box-align: center;
+}
+.Center {
+  display: -webkit-box;
+  display: -moz-box;
+  display: box;
+  -webkit-box-pack: center;
+  -moz-box-pack: center;
+  box-pack: center;
+  -webkit-box-align: center;
+  -moz-box-align: center;
+  box-align: center;
+}
+#source {
+  display: -webkit-box;
+  display: -moz-box;
+  display: box;
+  -webkit-box-orient: vertical;
+  -moz-box-orient: vertical;
+  box-orient: vertical;
+}
+section {
+  display: -webkit-box;
+  display: -moz-box;
+  display: box;
+}
+* {
+  margin: 0;
+  padding: 0;
+}
+body {
+  font-family: arial, sans-serif;
+  font-size: 100%;
+  margin: 3em;
+  background: #aaa;
+  color: #fff;
+}
+h2, p {
+  font-size: 100%;
+  font-weight: normal;
+}
+h2 {
+  font-family: "Cabin sketch";
+  font-size: 180%;
+}
+ul, li {
+  list-style: none;
+}
+ul {
+  overflow: hidden;
+  padding: 1em;
+}
+section > h2 {
+  width: 6em;
+  height: 4em;
+  margin: 1em;
+  background-color: white;
+  color: black ;
+  position: relative;
+}
+section > h2 p {
+  padding-left: 1em;
+  padding-top: 1em;
+}
+section > h2:after {
+  content: " ";
+  position: absolute;
+  width: 3em;
+  height: 1.5em;
+  background-color: rgba(1, 1, 1, 0.1);
+  top: -0.75em;
+  left: 2em;
+}
+section article {
+  text-decoration: none;
+  cursor: move;
+  color: #000;
+  background-image: -webkit-gradient(linear, center bottom, center top, from(#ffffcc), to(#ededc9));
+  background-image: -o-linear-gradient(bottom, #ffffcc 40%, #ffffdb 78%, #ededc9 80%);
+  background-image: -moz-linear-gradient(bottom, #ffffcc 40%, #ffffdb 78%, #ededc9 80%);
+  background-image: -webkit-linear-gradient(bottom, #ffffcc, #ededc9 40%, #ffffdb 78%, #ededc9 80%);
+  background-image: -ms-linear-gradient(bottom, #ffffcc 40%, #ffffdb 78%, #ededc9 80%);
+  background-image: linear-gradient(bottom, #ffffcc 40%, #ffffdb 78%, #ededc9 80%);
+  display: inline-block;
+  height: 15em;
+  width: 15em;
+  padding: 1em;
+  margin: 1em;
+  -webkit-box-shadow: 0px 25px 3px rgba(33, 33, 33, 0.7);
+  -moz-box-shadow: 0px 25px 3px rgba(33, 33, 33, 0.7);
+  box-shadow: 0px 25px 3px rgba(33, 33, 33, 0.7);
+  -moz-transition: all .15s linear;
+  -o-transition: -o-transform 0.15s linear;
+  -webkit-transition: all .15s linear;
+}
+ul li {
+  margin: 0em;
+  font-family: "Architects Daughter", arial, sans-serif;
+  font-size: 120%;
+}
+ul li h2 {
+  font-size: 140%;
+  font-weight: bold;
+  padding-bottom: 10px;
+}
+ul li p {
+  font-family: "Architects Daughter", arial, sans-serif;
+  font-size: 120%;
+}
+section article {
+  -webkit-transform: rotate(-6deg);
+  -moz-transform: rotate(-6deg);
+  -o-transform: rotate(-6deg);
+}
+article.frmk {
+  -webkit-transform: rotate(4deg);
+  -moz-transform: rotate(4deg);
+  -o-transform: rotate(4deg);
+  position: relative;
+  top: 5px;
+  background-image: -webkit-gradient(linear, center bottom, center top, from(#ccffcc), to(#c9edc9));
+  background-image: -o-linear-gradient(bottom, #ccffcc 40%, #dbffdb 78%, #c9edc9 80%);
+  background-image: -moz-linear-gradient(bottom, #ccffcc 40%, #dbffdb 78%, #c9edc9 80%);
+  background-image: -webkit-linear-gradient(bottom, #ccffcc, #c9edc9 40%, #dbffdb 78%, #c9edc9 80%);
+  background-image: -ms-linear-gradient(bottom, #ccffcc 40%, #dbffdb 78%, #c9edc9 80%);
+  background-image: linear-gradient(bottom, #ccffcc 40%, #dbffdb 78%, #c9edc9 80%);
+  -webkit-transform: translate(0em, 0.5em);
+  z-index: 1;
+}
+article.lib {
+  -webkit-transform: rotate(-3deg);
+  -moz-transform: rotate(-3deg);
+  -o-transform: rotate(-3deg);
+  position: relative;
+  top: -5px;
+  -webkit-border-bottom-right-radius: 125px 25px;
+  -moz-border-radius-bottomright: 125px 25px;
+  border-bottom-right-radius: 125px 25px;
+  background-image: -moz-linear-gradient(bottom right, #4d4dff, #ccccff 9%, transparent 9%), -moz-linear-gradient(bottom, #ccccff 40%, #dbdbff 78%, #c9c9ed 80%);
+  background-image: -webkit-linear-gradient(bottom right, #4d4dff, #ccccff 9%, transparent 9%), -webkit-linear-gradient(bottom, #ccccff, #c9c9ed 40%, #dbdbff 78%, #c9c9ed 80%);
+  /*
+	&::after {
+		content : ' ';
+		  .Curl(125px, 25px);
+		.FlexBox;
+		  text-decoration:none;
+		  color:red;
+		  height:15em;
+		  width:15em;
+		margin : 1em;
+		  padding:1em;
+		-moz-box-sizing: content-box;
+			background-color : red;
+			position:absolute;
+			top : 0px;
+			left : 0px;
+			z-index : 5;
+	background-image: -moz-linear-gradient(100% 100%, darken(#ccf,18%),#ccf 9%, transparent 9%);
+	  background-image: -webkit-linear-gradient(bottom right, #a8a8ff, #ccccff 9%, transparent 9%);
+	}
+*/
+
+}
+article.server {
+  -webkit-transform: rotate(5deg);
+  -moz-transform: rotate(5deg);
+  -o-transform: rotate(5deg);
+  position: relative;
+  top: -10px;
+  -webkit-border-bottom-left-radius: 125px 25px;
+  -moz-border-radius-bottomleft: 125px 25px;
+  border-bottom-left-radius: 125px 25px;
+  background-image: -moz-linear-gradient(bottom left, #c44dff, #eeccff 9%, transparent 9%), -moz-linear-gradient(bottom, #eeccff 40%, #f3dbff 78%, #e1c9ed 80%);
+  background-image: -webkit-linear-gradient(bottom left, #c44dff, #eeccff 9%, transparent 9%), -webkit-linear-gradient(bottom, #eeccff, #e1c9ed 40%, #f3dbff 78%, #e1c9ed 80%);
+}
+section article:hover, section article:focus {
+  -webkit-box-shadow: -10px 10px 7px rgba(0, 0, 0, 0.7);
+  -moz-box-shadow: -10px 10px 7px rgba(0, 0, 0, 0.7);
+  box-shadow: -10px 10px 7px rgba(0, 0, 0, 0.7);
+  -webkit-transform: rotate(360deg) scale(1.25);
+  -moz-transform: rotate(360deg) scale(1.25);
+  -o-transform: scale(1.25);
+  position: relative;
+  z-index: 5;
+}
+ol {
+  text-align: center;
+}
+ol li {
+  display: inline;
+  padding-right: 1em;
+}
+ol li a {
+  color: #fff;
+}
+
+
+span {
+  padding-right : 5px;
+}
