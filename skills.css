@@ -220,3 +220,13 @@ ol li a {
 span {
   padding-right : 5px;
 }
+
+label {
+  margin-left : 5px;
+}
+
+label:after {
+
+  content : " : ";
+  margin-right : 0.2em;
+}

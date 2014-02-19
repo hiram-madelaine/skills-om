@@ -33,12 +33,15 @@
   [app owner]
   (om/component
    (dom/p nil (str app))))
+
+
+
 ;;;;;; Skill input ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
 (defn make-select
   [c l k v data]
-  (dom/div nil
+  (dom/span nil
            (dom/label nil l)
            (apply dom/select #js {:value v
                                        :onChange #(put! c [k (-> % .-target .-value)])}
@@ -48,7 +51,7 @@
 
 (defn make-input
   [c l k v t]
-  (dom/div nil
+  (dom/span nil
            (dom/label nil l)
            (dom/input #js {:type t
                            :value v
@@ -76,13 +79,14 @@
     om/IRenderState
     (render-state [_ {chan :chan  {:keys [label level cat tier version] :as new-skill} :inputs }]
                   (prn new-skill)
-                  (dom/div nil
-                           (make-input chan "label" :label label "text")
+                  (dom/fieldset #js {:className "form"}
+                           (make-input chan "Label" :label label "text")
                            (make-input chan "Version" :version version "tex")
                            (make-input chan "Level" :level level "range")
                            (make-select chan "Tier" :tier tier (om/get-shared owner [:tier] ) )
                            (make-select chan "Category" :cat cat (om/get-shared owner [:cat]))
-                           (dom/button #js {:onClick #(om/transact! app (fn [skills] (conj skills new-skill )))})))))
+                           (dom/button #js {:onClick #(om/transact! app (fn [skills] (conj skills new-skill )))}
+                                       "Add skill")))))
 
 
 ;;;;;; Skills Board ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
