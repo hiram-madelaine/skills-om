@@ -28,12 +28,12 @@
 
 
 (defn label [m k ref-data]
+  "Find label in the ref data"
   (->> k
        ref-data
        (some #(when ((comp  #{(k m)} :code) %) %))
        :label))
 
-(label {:tier "front"} :tier  app-ref)
 
 (defn trace
   "Display the raw data."
