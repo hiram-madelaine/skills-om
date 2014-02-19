@@ -26,13 +26,20 @@
 
 ;;;;;;;;;; Utils ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+
+(defn label [m k ref-data]
+  (->> k
+       ref-data
+       (some #(when ((comp  #{(k m)} :code) %) %))
+       :label))
+
+(label {:tier "front"} :tier  app-ref)
+
 (defn trace
   "Display the raw data."
   [app owner]
   (om/component
    (dom/p nil (str app))))
-
-
 
 ;;;;;; Skill input ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -42,7 +49,7 @@
   (dom/span nil
            (dom/label nil l)
            (apply dom/select #js {:value v
-                                       :onChange #(put! c [k (-> % .-target .-value)])}
+                                  :onChange #(put! c [k (-> % .-target .-value)])}
                        (dom/option #js {:value ""} "")
                        (map (fn [{:keys [code label]}]
                               (dom/option #js {:value code} label)) data))))
@@ -103,7 +110,7 @@
   [[cat skills] owner]
   (om/component
    (dom/article #js {:className (:cat cat)}
-                (dom/h2 nil (dom/p nil (:cat cat)))
+                (dom/h2 nil (dom/p nil (label cat :cat (om/get-shared owner))))
                 (apply dom/ul nil (om/build-all skill-view skills {:key :id})))))
 
 
@@ -119,7 +126,7 @@
   [[tier skills] owner]
   (om/component
     (dom/section nil
-                 (dom/h2 nil (dom/p nil (:tier tier)))
+                 (dom/h2 nil (dom/p nil (label tier :tier  (om/get-shared owner))))
                  (om/build posts-view skills {:fn #(s/index % [:cat])}))))
 
 (defn board-view
