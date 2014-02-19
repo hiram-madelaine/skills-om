@@ -55,42 +55,48 @@
                               (dom/option #js {:value code} label)) data))))
 
 (defn make-input
-  [c l k v t]
-  (dom/span nil
-           (dom/label nil l)
-           (dom/input #js {:type t
-                           :value v
-                           :onChange #(put! c [k (-> % .-target .-value)])})))
+  ([c l k v t]
+   (make-input c l k v t {}))
+  ([c l k v t opts]
+    (dom/span nil
+              (dom/label nil l)
+              (dom/input (clj->js (merge opts {:type t
+                                               :value v
+                                               :onChange #(put! c [k (-> % .-target .-value)])}))))))
+
 
 (defn skill-input
   [app owner]
   (reify
     om/IInitState
     (init-state [_]
-                {:chan (chan)
-                 :inputs   {:label ""
-                            :level 0
-                            :cat ""
-                            :tier ""
-                            :version ""}})
+                (let [init {:label "" :version "" :level 0 :cat "" :tier ""}]
+                  {:chan (chan)
+                   :inputs init
+                   :init init}))
     om/IWillMount
     (will-mount [this]
-                (let [chan (om/get-state owner :chan)]
+                (let [{chan :chan init :init} (om/get-state owner)]
                   (go
                    (loop []
                      (let [[k v] (<! chan)]
-                       (om/set-state! owner [:inputs k] v))
+                       (condp = k
+                         :post (do
+                                 (om/transact! app (fn [skills] (conj skills v)))
+                                 (om/set-state! owner [:inputs] init))
+                         (om/set-state! owner [:inputs k] v)))
                      (recur)))))
     om/IRenderState
     (render-state [_ {chan :chan  {:keys [label level cat tier version] :as new-skill} :inputs }]
-                  (prn new-skill)
                   (dom/fieldset #js {:className "form"}
-                           (make-input chan "Label" :label label "text")
-                           (make-input chan "Version" :version version "tex")
-                           (make-input chan "Level" :level level "range")
-                           (make-select chan "Tier" :tier tier (om/get-shared owner [:tier] ) )
-                           (make-select chan "Category" :cat cat (om/get-shared owner [:cat]))
-                           (dom/button #js {:onClick #(om/transact! app (fn [skills] (conj skills new-skill )))}  "Add skill")))))
+                                (make-input chan "Label" :label label "text")
+                                (make-input chan "Version" :version version "tex")
+                                (make-input chan "Level" :level level "range" {:min 0 :max 5})
+                                (make-select chan "Tier" :tier tier (om/get-shared owner [:tier] ) )
+                                (make-select chan "Category" :cat cat (om/get-shared owner [:cat]))
+                                (dom/input #js {:type "button"
+                                                :value "Add Skill"
+                                                :onClick #(put! chan [:post new-skill])})))))
 
 
 ;;;;;; Skills Board ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
