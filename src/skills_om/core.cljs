@@ -21,13 +21,18 @@
                      {:code "data" :label "Database"}]
               :cat [ {:code "lang" :label "Language"}
                      {:code "frmk" :label "Framework"}
-                     {:code "server" :label "Serveur"}]})
+                     {:code "server" :label "Serveur"}]
+              :level [{:code 1 :label "Novice"}
+                       {:code 2 :label "Advanced beginner"}
+                       {:code 3 :label "Competent"}
+                      {:code 4 :label "Proficient"}
+                      {:code 5 :label "Expert"}]})
 
 
 ;;;;;;;;;; Utils ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
-(defn label [m k ref-data]
+(defn ->label [m k ref-data]
   "Find label in the ref data"
   (->> k
        ref-data
@@ -91,7 +96,7 @@
                   (dom/fieldset #js {:className "form"}
                                 (make-input chan "Label" :label label "text")
                                 (make-input chan "Version" :version version "tex")
-                                (make-input chan "Level" :level level "range" {:min 0 :max 5})
+                                (make-input chan "Level" :level level "range" {:min 1 :max 5})
                                 (make-select chan "Tier" :tier tier (om/get-shared owner [:tier] ) )
                                 (make-select chan "Category" :cat cat (om/get-shared owner [:cat]))
                                 (dom/input #js {:type "button"
@@ -109,14 +114,15 @@
      (dom/li nil
              (dom/p nil
                     (dom/span nil label)
-                    (dom/span nil version))))))
+                    (dom/span nil version)
+                    (dom/span nil (->label skill :level (om/get-shared owner))))))))
 
 (defn post-it-view
   "Display a post-it from skills by category"
   [[cat skills] owner]
   (om/component
    (dom/article #js {:className (:cat cat)}
-                (dom/h2 nil (dom/p nil (label cat :cat (om/get-shared owner))))
+                (dom/h2 nil (dom/p nil (->label cat :cat (om/get-shared owner))))
                 (apply dom/ul nil (om/build-all skill-view skills {:key :id})))))
 
 
@@ -132,7 +138,7 @@
   [[tier skills] owner]
   (om/component
     (dom/section nil
-                 (dom/h2 nil (dom/p nil (label tier :tier  (om/get-shared owner))))
+                 (dom/h2 nil (dom/p nil (->label tier :tier  (om/get-shared owner))))
                  (om/build posts-view skills {:fn #(s/index % [:cat])}))))
 
 (defn board-view
