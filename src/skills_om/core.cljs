@@ -9,14 +9,12 @@
 
 
 ;;;;; App State ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(def app-state (atom [{:id 0 :label "Clojure" :version "1.6" :level 4 :tier "middle" :cat "lang"}
-                      {:id 1 :label "Spring" :version "3.0.0" :level 3 :tier "middle" :cat "frmk"}
-                     {:id 2 :label "Java" :version "7" :level 4 :tier "middle" :cat "lang"}
-                     {:id 3 :label "Oracle" :version "7" :level 5 :tier "data" :cat "server"}
-                      ]))
-#_(swap! app-state conj {:id 4 :label "Weblogic" :level 4 :version "10.3" :cat "server" :tier "middle"})
 
-
+(def app-state (atom {:skills  [{:id 0 :label "Clojure" :version "1.6" :level 4 :tier "middle" :cat "lang"}
+                                {:id 1 :label "Spring" :version "3.0.0" :level 3 :tier "middle" :cat "frmk"}
+                                {:id 2 :label "Java" :version "7" :level 4 :tier "middle" :cat "lang"}
+                                {:id 3 :label "Oracle" :version "7" :level 5 :tier "data" :cat "server"}
+                                ]}))
 
 (def app-ref {:tier [{:code "middle" :label "Middleware"}
                      {:code "front" :label "Front"}
@@ -85,8 +83,7 @@
                            (make-input chan "Level" :level level "range")
                            (make-select chan "Tier" :tier tier (om/get-shared owner [:tier] ) )
                            (make-select chan "Category" :cat cat (om/get-shared owner [:cat]))
-                           (dom/button #js {:onClick #(om/transact! app (fn [skills] (conj skills new-skill )))}
-                                       "Add skill")))))
+                           (dom/button #js {:onClick #(om/transact! app (fn [skills] (conj skills new-skill )))}  "Add skill")))))
 
 
 ;;;;;; Skills Board ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -94,61 +91,55 @@
 (defn skill-view
   "Display a skill on a post-it line"
   [app owner]
-  (reify
-    om/IRender
-    (render [_]
-            (let [{:as skill :keys [label version level tier cat]} app]
-              (dom/li nil (dom/p nil  (dom/span nil label)
-                                 (dom/span nil version)))))))
+  (om/component
+   (let [{:as skill :keys [label version level tier cat]} app]
+     (dom/li nil
+             (dom/p nil
+                    (dom/span nil label)
+                    (dom/span nil version))))))
+
 (defn post-it-view
   "Display a post-it from skills by category"
   [[cat skills] owner]
-  (reify
-    om/IRender
-    (render [_]
-            (dom/article #js {:className (:cat cat)}
-                         (dom/h2 nil (dom/p nil (:cat cat)))
-                         (apply dom/ul nil (om/build-all skill-view skills {:key :id}))))))
+  (om/component
+   (dom/article #js {:className (:cat cat)}
+                (dom/h2 nil (dom/p nil (:cat cat)))
+                (apply dom/ul nil (om/build-all skill-view skills {:key :id})))))
 
 
 (defn posts-view
   "Display all the post-its for a tier"
   [skills-by-cat owner]
-  (reify
-    om/IRender
-    (render [_]
-            (apply dom/div nil (om/build-all post-it-view skills-by-cat )))))
+  (om/component
+   (apply dom/div nil (om/build-all post-it-view skills-by-cat ))))
+
 
 (defn tier-view
   "Display a tier user story"
   [[tier skills] owner]
-  (reify
-    om/IRender
-    (render [_]
-            (dom/section nil
-                         (dom/h2 nil (dom/p nil (:tier tier)))
-                         (om/build posts-view skills {:fn #(s/index % [:cat])})  ))))
+  (om/component
+    (dom/section nil
+                 (dom/h2 nil (dom/p nil (:tier tier)))
+                 (om/build posts-view skills {:fn #(s/index % [:cat])}))))
 
 (defn board-view
   "Display the whole board of skills from skills by tier"
- [app owner]
- (reify
-   om/IRender
-   (render [_]
-           (apply dom/div nil (om/build-all tier-view app)))))
+  [skills-by-tier owner]
+ (om/component
+  (apply dom/div nil (om/build-all tier-view skills-by-tier))))
+
 
 (defn app-view
+  "Display the whole app"
   [app owner]
-  (reify
-    om/IRender
-    (render [_]
-           (dom/div nil
-                    (om/build skill-input app)
-                    (om/build board-view app {:fn #(s/index % [:tier])})) )))
-
+  (om/component
+   (dom/div nil
+            (om/build skill-input app)
+            (om/build board-view app {:fn #(s/index % [:tier])}))))
 
 (om/root
  app-view
  app-state
   {:target (. js/document (getElementById "app"))
+   :path [:skills]
    :shared app-ref})
