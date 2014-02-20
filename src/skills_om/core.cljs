@@ -78,18 +78,20 @@
                 (let [init {:label "" :version "" :level 0 :cat "" :tier ""}]
                   {:chan (chan)
                    :inputs init
-                   :init init}))
+                   :init init
+                   :coercers {:level int}}))
     om/IWillMount
     (will-mount [this]
-                (let [{chan :chan init :init} (om/get-state owner)]
+                (let [{ :keys [coercers chan init] :as state} (om/get-state owner)]
                   (go
                    (loop []
-                     (let [[k v] (<! chan)]
+                     (let [[k v] (<! chan)
+                           coerce (get coercers k identity)]
                        (condp = k
                          :post (do
                                  (om/transact! app (fn [skills] (conj skills v)))
                                  (om/set-state! owner [:inputs] init))
-                         (om/set-state! owner [:inputs k] v)))
+                         (om/set-state! owner [:inputs k] (coerce v))))
                      (recur)))))
     om/IRenderState
     (render-state [_ {chan :chan  {:keys [label level cat tier version] :as new-skill} :inputs }]
@@ -97,7 +99,7 @@
                                 (make-input chan "Label" :label label "text")
                                 (make-input chan "Version" :version version "tex")
                                 (make-input chan "Level" :level level "range" {:min 1 :max 5})
-                                (make-select chan "Tier" :tier tier (om/get-shared owner [:tier] ) )
+                                (make-select chan "Tier" :tier tier (om/get-shared owner [:tier] ))
                                 (make-select chan "Category" :cat cat (om/get-shared owner [:cat]))
                                 (dom/input #js {:type "button"
                                                 :value "Add Skill"
