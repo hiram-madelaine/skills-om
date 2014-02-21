@@ -48,13 +48,16 @@
 
 ;;;;;; Skill input ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(defn e-value
+  [e]
+  (-> e .-target .-value))
 
 (defn make-select
   [c l k v data]
   (dom/span nil
            (dom/label nil l)
            (apply dom/select #js {:value v
-                                  :onChange #(put! c [k (-> % .-target .-value)])}
+                                  :onChange #(put! c [k (e-value %)])}
                        (dom/option #js {:value ""} "")
                        (map (fn [{:keys [code label]}]
                               (dom/option #js {:value code} label)) data))))
@@ -63,11 +66,12 @@
   ([c l k v t]
    (make-input c l k v t {}))
   ([c l k v t opts]
-    (dom/span nil
-              (dom/label nil l)
-              (dom/input (clj->js (merge opts {:type t
-                                               :value v
-                                               :onChange #(put! c [k (-> % .-target .-value)])}))))))
+   (let [put-chan #(put! c [k (e-value %)])]
+     (dom/span nil
+                    (dom/label nil l)
+                    (dom/input (clj->js (merge opts {:type t
+                                                     :value v
+                                                     :onChange put-chan})))))))
 
 
 (defn skill-input
