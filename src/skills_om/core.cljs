@@ -16,28 +16,54 @@
                                 {:id 3 :label "Oracle" :version "7" :level 5 :tier "data" :cat "server"}
                                 ]}))
 
-(def app-ref {:tier [{:code "middle" :label "Middleware"}
-                     {:code "front" :label "Front"}
-                     {:code "data" :label "Database"}]
-              :cat [ {:code "lang" :label "Language"}
-                     {:code "frmk" :label "Framework"}
-                     {:code "server" :label "Serveur"}]
-              :level [{:code 1 :label "Novice"}
-                       {:code 2 :label "Advanced beginner"}
-                       {:code 3 :label "Competent"}
-                      {:code 4 :label "Proficient"}
-                      {:code 5 :label "Expert"}]})
+(def app-ref {:en {:tier [{:code "middle" :label "Middleware"}
+                          {:code "front" :label "Front"}
+                          {:code "data" :label "Database"}]
+                   :cat [ {:code "lang" :label "Language"}
+                          {:code "frmk" :label "Framework"}
+                          {:code "server" :label "Serveur"}]
+                   :level [{:code 1 :label "Novice"}
+                           {:code 2 :label "Advanced beginner"}
+                           {:code 3 :label "Competent"}
+                           {:code 4 :label "Proficient"}
+                           {:code 5 :label "Expert"}]
+                   :input {:level "Level"
+                           :label "Name"
+                           :cat "Category"
+                           :add-skill "Add skill"
+                           :del-skill "X"}}
+              :fr  {:tier [{:code "middle" :label "Middleware"}
+                          {:code "front" :label "Front"}
+                          {:code "data" :label "Database"}]
+                   :cat [ {:code "lang" :label "Langage"}
+                          {:code "frmk" :label "Framework"}
+                          {:code "server" :label "Serveur"}]
+                   :level [{:code 1 :label "Novice"}
+                           {:code 2 :label "Débutant"}
+                           {:code 3 :label "Compétent"}
+                           {:code 4 :label "Efficace"}
+                           {:code 5 :label "Expert"}]
+                    :input {:level "Niveau"
+                            :label "Nom"
+                            :cat "Catégorie"
+                            :add-skill "Ajouter compétence"
+                            :del-skill "X"}}})
 
 
 ;;;;;;;;;; Utils ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
-(defn ->label [m k ref-data]
-  "Find label in the ref data"
-  (->> k
-       ref-data
-       (some #(when ((comp  #{(k m)} :code) %) %))
-       :label))
+(defn ->label
+  "Translate labels or business data"
+  ([ref-data m k]
+   "Find label in the ref data"
+   (->> k
+        ref-data
+        (some #(when ((comp  #{(k m)} :code) %) %))
+        :label))
+  ([ref-data ks]
+   (get-in ref-data ks)))
+
 
 
 (defn trace
@@ -99,15 +125,16 @@
                      (recur)))))
     om/IRenderState
     (render-state [_ {chan :chan  {:keys [label level cat tier version] :as new-skill} :inputs }]
-                  (dom/fieldset #js {:className "form"}
-                                (make-input chan "Label" :label label "text")
-                                (make-input chan "Version" :version version "tex")
-                                (make-input chan "Level" :level level "range" {:min 1 :max 5})
-                                (make-select chan "Tier" :tier tier (om/get-shared owner [:tier] ))
-                                (make-select chan "Category" :cat cat (om/get-shared owner [:cat]))
-                                (dom/input #js {:type "button"
-                                                :value "Add Skill"
-                                                :onClick #(put! chan [:post new-skill])})))))
+                  (let [i18n (om/get-shared owner :i18n)]
+                    (dom/fieldset #js {:className "form"}
+                                  (make-input chan (i18n [:input :label])  :label label "text")
+                                  (make-input chan "Version" :version version "tex")
+                                  (make-input chan (i18n [:input :level]) :level level "range" {:min 1 :max 5})
+                                  (make-select chan "Tier" :tier tier (i18n [:tier] ))
+                                  (make-select chan (i18n [:input :cat]) :cat cat (i18n [:cat]))
+                                  (dom/input #js {:type  "button"
+                                                  :value (i18n [:input :add-skill])
+                                                  :onClick #(put! chan [:post new-skill])}))))))
 
 
 ;;;;;; Skills Board ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -121,14 +148,14 @@
              (dom/p nil
                     (dom/span nil label)
                     (dom/span nil version)
-                    (dom/span nil (->label skill :level (om/get-shared owner))))))))
+                    (dom/span nil ((om/get-shared owner :i18n) skill :level)))))))
 
 (defn post-it-view
   "Display a post-it from skills by category"
   [[cat skills] owner]
   (om/component
    (dom/article #js {:className (:cat cat)}
-                (dom/h2 nil (dom/p nil (->label cat :cat (om/get-shared owner))))
+                (dom/h2 nil (dom/p nil ((om/get-shared owner :i18n) cat :cat)))
                 (apply dom/ul nil (om/build-all skill-view skills {:key :id})))))
 
 
@@ -144,7 +171,7 @@
   [[tier skills] owner]
   (om/component
     (dom/section nil
-                 (dom/h2 nil (dom/p nil (->label tier :tier  (om/get-shared owner))))
+                 (dom/h2 nil (dom/p nil ((om/get-shared owner :i18n) tier :tier)))
                  (om/build posts-view skills {:fn #(s/index % [:cat])}))))
 
 (defn board-view
@@ -167,4 +194,4 @@
  app-state
   {:target (. js/document (getElementById "app"))
    :path [:skills]
-   :shared app-ref})
+   :shared {:i18n (partial ->label (:fr app-ref))}})
